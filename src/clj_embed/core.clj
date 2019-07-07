@@ -1,19 +1,15 @@
 (ns clj-embed.core
   (:require [clojure.tools.deps.alpha :as deps]
+            [clojure.tools.deps.alpha.reader :as deps.reader]
             [clojure.java.io :as io])
   (:import (org.xeustechnologies.jcl JarClassLoader)
            (java.util.regex Pattern)
            (java.io File)))
 
-(def ^:const DEFAULT_REPOS
-  {"central" {:url "https://repo1.maven.org/maven2/"}
-   "clojars" {:url "https://clojars.org/repo/"}})
-
 (def ^:const DEFAULT_DEPS
   {'org.projectodd.shimdandy/shimdandy-api  {:mvn/version "1.2.0"}
    'org.projectodd.shimdandy/shimdandy-impl {:mvn/version "1.2.0"}
-   'org.clojure/tools.namespace             {:mvn/version "0.2.11"}
-   'org.clojure/clojure                     {:mvn/version "1.9.0-RC2"}})
+   'org.clojure/tools.namespace             {:mvn/version "0.2.11"}})
 
 (def ^:const RUNTIME_SHIM_CLASS
   "org.projectodd.shimdandy.impl.ClojureRuntimeShimImpl")
@@ -22,8 +18,10 @@
   ([] (resolve-deps {}))
   ([deps]
    (deps/resolve-deps
-     {:deps      (merge DEFAULT_DEPS deps)
-      :mvn/repos DEFAULT_REPOS}
+     (deps.reader/merge-deps
+       [(deps.reader/install-deps)
+        {:deps DEFAULT_DEPS}
+        {:deps deps}])
      nil)))
 
 (defn- get-paths [lib-map]
