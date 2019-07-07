@@ -1,4 +1,5 @@
 (ns clj-embed.shims
+  (:refer-clojure :exclude [load-string])
   (:require [clojure.core :as core]
             [clojure.main :as main]))
 
