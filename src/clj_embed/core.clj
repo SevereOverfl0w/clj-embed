@@ -1,6 +1,5 @@
 (ns clj-embed.core
-  (:require [clojure.string :as string]
-            [clojure.tools.deps.alpha :as deps]
+  (:require [clojure.tools.deps.alpha :as deps]
             [clojure.java.io :as io])
   (:import (org.xeustechnologies.jcl JarClassLoader)
            (java.util.regex Pattern)
@@ -27,11 +26,8 @@
       :mvn/repos DEFAULT_REPOS}
      nil)))
 
-(defn- build-classpath [deps]
-  (deps/make-classpath deps nil nil))
-
-(defn- classpath-segments [classpath]
-  (string/split classpath (Pattern/compile (Pattern/quote File/pathSeparator))))
+(defn- get-paths [lib-map]
+  (mapcat :paths (vals lib-map)))
 
 (defn- new-rt-shim [^ClassLoader classloader]
   (doto (.newInstance (.loadClass classloader RUNTIME_SHIM_CLASS))
@@ -98,8 +94,7 @@
   ([deps]
    (->> deps
         (resolve-deps)
-        (build-classpath)
-        (classpath-segments)
+        (get-paths)
         (construct-class-loader)
         (new-rt-shim)
         (load-shim-lib))))
