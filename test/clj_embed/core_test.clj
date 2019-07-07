@@ -39,3 +39,13 @@
           h1   (with-temporary-runtime (.hashCode RT))
           h2   (with-temporary-runtime (.hashCode RT))]
       (is 3 (count #{root h1 h2})))))
+
+(deftest dependencies
+  (testing "When I use a dependency from maven, it can be required"
+    (let [r (new-runtime {'org.clojure/core.match {:mvn/version "0.3.0-alpha5"}})]
+      (try
+        (is
+          (nil?
+            (with-runtime r
+              (require '[clojure.core.match :refer [match]]))))
+        (finally (close-runtime! r))))))
