@@ -49,7 +49,7 @@
             (with-runtime r
               (require '[clojure.core.match :refer [match]]))))
         (finally (close-runtime! r)))))
-  #_(testing "When I use a dependency from git, it can be required"
+  (testing "When I use a dependency from git, it can be required"
     (let [r (new-runtime {'com.cognitect/test-runner
                           {:git/url "https://github.com/cognitect-labs/test-runner.git"
                            :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}})]

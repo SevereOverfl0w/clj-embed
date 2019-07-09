@@ -2,7 +2,7 @@
   (:require [clojure.tools.deps.alpha :as deps]
             [clojure.tools.deps.alpha.reader :as deps.reader]
             [clojure.java.io :as io])
-  (:import (org.xeustechnologies.jcl JarClassLoader)
+  (:import (java.net URL URLClassLoader)
            (java.util.regex Pattern)
            (java.io File)))
 
@@ -34,24 +34,17 @@
     (.init)))
 
 (defn construct-class-loader [classes]
-  (let [it (JarClassLoader.)]
-    (doseq [clazz classes] (.add it clazz))
-    (.setEnabled (.getParentLoader it) false)
-    (.setEnabled (.getSystemLoader it) false)
-    (.setEnabled (.getThreadLoader it) false)
-    (.setEnabled (.getOsgiBootLoader it) false)
-    it))
-
-(defn unload-classes-from-loader [^JarClassLoader loader]
-  (let [loaded (doall (keys (.getLoadedClasses loader)))]
-    (doseq [clazz loaded] (.unloadClass loader clazz))))
+  (URLClassLoader.
+    (into-array
+      (map #(.toURL (io/file %)) classes))
+    ;; This is the boot class loader, the highest classloader, and importantly
+    ;; the one without Clojure in.
+    (.getParent (ClassLoader/getSystemClassLoader))))
 
 ;; public API
 
 (defn close-runtime! [runtime]
-  (.close runtime)
-  (unload-classes-from-loader
-    (.getClassLoader runtime)))
+  (.close runtime))
 
 (defn eval-in-runtime [runtime code-as-string]
   (letfn [(call [fqsym code] (.invoke runtime fqsym code))]
