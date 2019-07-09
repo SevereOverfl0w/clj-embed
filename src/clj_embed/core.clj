@@ -7,8 +7,8 @@
            (java.io File)))
 
 (def ^:const DEFAULT_DEPS
-  {'org.projectodd.shimdandy/shimdandy-api  {:mvn/version "1.2.0"}
-   'org.projectodd.shimdandy/shimdandy-impl {:mvn/version "1.2.0"}
+  {'org.projectodd.shimdandy/shimdandy-api  {:mvn/version "1.2.1"}
+   'org.projectodd.shimdandy/shimdandy-impl {:mvn/version "1.2.1"}
    'org.clojure/tools.namespace             {:mvn/version "0.2.11"}})
 
 (def ^:const RUNTIME_SHIM_CLASS
